@@ -21,7 +21,7 @@ const Forms = () => {
   return (
     <div class="bg-white p-5 rounded-md">
       <form>
-        <div class="grid gap-6 mb-6 md:grid-cols-3">
+        <div class="grid gap-6 mb-6 grid-cols-1 md:grid-cols-3">
           <div>
             <label for="first_name" class="block mb-2 text font-medium text-gray-900 dark:text-white">Heading</label>
             <input type="text" id="first_name" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:border-gray-500 block w-full p-2.5 outline-none" placeholder="John" />
@@ -67,7 +67,7 @@ const Forms = () => {
               <ToggleButton value="android">Type2</ToggleButton>
             </ToggleButtonGroup>
           </div>
-          <div className='col-span-3'>
+          <div className='col-span-1 md:col-span-3'>
             <label for="first_name" class="block mb-2 text font-medium text-gray-900 dark:text-white">Editor</label>
             <JoditEditor
               ref={editor}

@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export default function FAQ() {
     return (
-        <div class="col-span-3">
+        <div class="sm:col-span-2 lg:col-span-3">
             <Accordion>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}

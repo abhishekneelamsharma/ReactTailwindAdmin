@@ -10,10 +10,10 @@ import Faq from '../scenes/accordion/Faq'
 const Dashboard = () => {
     return (
         <>
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                 <Analytics />
                 <Barcharts />
-                <div className='flex flex-col gap-4 h-64'>
+                <div className='flex flex-col gap-4 h-64 sm:col-span-2  lg:col-span-1'>
                     <Piecharts />
                     <Steps />
                 </div>

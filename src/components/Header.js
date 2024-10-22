@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { Avatar } from '@mui/material';
 
-const Header = () => {
+const Header = ({ handleToggle }) => {
     const [userDropdown, setUserDropdown] = useState(false);
 
+    // console.log(handleToggle)
     return (
         <>
-            <nav className='ml-64 px-4 py-2.5 flex justify-between bg-white'>
+            <nav className='ml-64 px-4 py-2.5  justify-between bg-white hidden lg:flex'>
                 <div class="w-full max-w-sm min-w-[200px]">
                     <div class="relative flex items-center">
 
@@ -36,8 +37,30 @@ const Header = () => {
                     </div>
                 </div>
             </nav >
+
+            <nav className=' px-4 py-2.5  justify-between bg-white flex lg:hidden'>
+                <div class="w-full max-w-sm min-w-[200px] mt-2" >
+                    <button onClick={handleToggle}>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
+
+                </div>
+                <div>
+                    <div class="flex items-end ms-3 flex-col cursor-pointer">
+                        <div>
+                            <div onClick={() => setUserDropdown(!userDropdown)}>
+                                <Avatar variant="circular" />
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </nav >
             <hr />
-            <div class={userDropdown ? "absolute right-0 z-50 w-64 px-2 text-base list-none bg-white divide-y divide-gray-100 rounded shadow float-end" : "z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow"} id="dropdown-user">
+
+            <div class={userDropdown ? "absolute right-0 z-50 w-64 px-2 text-base list-none bg-white divide-y divide-gray-100 rounded shadow float-end " : "z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow "} id="dropdown-user">
                 <div class="px-4 py-3" role="none">
                     <p class="text-sm text-gray-900 dark:text-white" role="none">
                         Neil Sims

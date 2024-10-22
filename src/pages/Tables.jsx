@@ -15,6 +15,9 @@ import Box from "@mui/material/Box"
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import IconButton from '@mui/material/IconButton'
 import { exportToExcel } from 'react-json-to-excel';
+import Tooltip from '@mui/material/Tooltip'
+
+
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -70,6 +73,7 @@ export default function Tables() {
 
   const [noOfRows, setNoOfRows] = useState(10);
   const [tableData, setTableData] = useState(rows);
+  const [currentPage, setCurrentPage] = useState(1);
 
 
   //select no. of rows
@@ -82,10 +86,12 @@ export default function Tables() {
   }, [noOfRows])
 
 
+
   //My custom search for the table
-  const HandleSearch = (inputSearch) => {
+  const HandleSearch = (e) => {
+    const inputSearch = e.target.value.toLowerCase();
     if (inputSearch == "") {
-      setTableData(rows.slice(0, 10));
+      setTableData(rows.slice(0, noOfRows));
     } else {
       // setNoOfRows(0);
       const searchData = rows.filter((ele) => {
@@ -93,18 +99,38 @@ export default function Tables() {
           return e.toString().toLowerCase().includes(inputSearch)
         });
       })
-      setTableData([...searchData])
+      setTableData(searchData)
     }
   }
 
+
+  const totalPages = Math.ceil(rows.length / noOfRows);
+
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * noOfRows;
+    const endIndex = startIndex + noOfRows;
+    setTableData(rows.slice(startIndex, endIndex));
+  }, [currentPage, noOfRows])
+
+  const handlePaginationNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  }
+
+  const handlePaginationPrev = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
 
 
 
   return (
     <>
       <div className='flex justify-between my-4'>
-        <div className='flex gap-4'>
-          <Box sx={{ minWidth: 80, bgcolor: "white", }}>
+        <div className='flex gap-4 '>
+          <Box sx={{ minWidth: 80, bgcolor: "white", }} class="hidden md:block bg-white w-20">
             <FormControl size='small' fullWidth>
               <InputLabel id="demo-simple-select-label">rows</InputLabel>
               <Select
@@ -123,13 +149,15 @@ export default function Tables() {
             </FormControl>
           </Box>
           <Box sx={{ minWidth: 40, bgcolor: "white", border: "1px solid #d4d4d8", borderRadius: "5px", paddingLeft: "1px", paddingTop: "1px" }}>
-            <IconButton onClick={() => exportToExcel(rows, 'tableData')}>
-              <SystemUpdateAltIcon sx={{ fontSize: "20px" }} />
-            </IconButton>
+            <Tooltip title="download table data" placement='top'>
+              <IconButton onClick={() => exportToExcel(rows, 'tableData')}>
+                <SystemUpdateAltIcon sx={{ fontSize: "20px" }} />
+              </IconButton>
+            </Tooltip>
           </Box>
         </div>
         <div>
-          <input type="text" name="" id="" onChange={(e) => HandleSearch(e.target.value)} className='w-64 bg-white placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow' placeholder='Table search...' />
+          <input type="text" name="" id="" onChange={HandleSearch} className='w-64 bg-white placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow' placeholder='Table search...' />
         </div>
       </div>
 
@@ -147,58 +175,57 @@ export default function Tables() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {tableData?.map((row) =>
-            (
-              < StyledTableRow key={row.name} >
-                <StyledTableCell component="th" scope="row">
-                  {row.name}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row.calories}</StyledTableCell>
-                <StyledTableCell align="right">{row.fat}</StyledTableCell>
-                <StyledTableCell align="right">{row.carbs}</StyledTableCell>
-                <StyledTableCell align="right">{row.protein}</StyledTableCell>
-              </StyledTableRow>
-            )
-            )}
+            {
+              tableData?.length > 0 ? (
+                tableData?.map((row, ind) =>
+                (
+                  < StyledTableRow key={ind} >
+                    <StyledTableCell component="th" scope="row">
+                      {row.name}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">{row.calories}</StyledTableCell>
+                    <StyledTableCell align="right">{row.fat}</StyledTableCell>
+                    <StyledTableCell align="right">{row.carbs}</StyledTableCell>
+                    <StyledTableCell align="right">{row.protein}</StyledTableCell>
+                  </StyledTableRow>
+                )
+                )
+              ) : <p className='p-3'>No data found...</p>
+            }
           </TableBody>
         </Table>
       </TableContainer >
 
-      {/* <div className='flex justify-end mt-4'>
+      <div className='flex justify-between mt-4'>
+        <div className='ml-1'>
+          <p >{currentPage} / {totalPages}</p>
+        </div>
         <nav aria-label="Page navigation example ">
           <ul class="flex items-center -space-x-px h-8 text-sm">
-            <li>
-              <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                <span class="sr-only">Previous</span>
-                <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4" />
-                </svg>
-              </a>
-            </li>
+            <Tooltip title="prev" placement='top'>
+              <li>
+                <a href="javascript:void(0)" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 " onClick={handlePaginationPrev}>
+                  <span class="sr-only" >Previous</span>
+                  <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4" />
+                  </svg>
+                </a>
+              </li>
+            </Tooltip>
 
-            <li>
-              <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">1</a>
-            </li>
-
-            <li>
-              <a href="#" aria-current="page" class="z-10 flex items-center justify-center px-3 h-8 leading-tight text-gray-600 border border-gray-300 bg-gray-300 ">2</a>
-            </li>
-
-            <li>
-              <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">3</a>
-            </li>
-
-            <li>
-              <a href="#" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={handlePaginationNext}>
-                <span class="sr-only">Next</span>
-                <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
-                </svg>
-              </a>
-            </li>
+            <Tooltip title="next" placement='top'>
+              <li>
+                <a href="javascript:void(0)" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onClick={handlePaginationNext}>
+                  <span class="sr-only">Next</span>
+                  <svg class="w-2.5 h-2.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+                  </svg>
+                </a>
+              </li>
+            </Tooltip>
           </ul>
         </nav>
-      </div> */}
+      </div >
     </>
   );
 }

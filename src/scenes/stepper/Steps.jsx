@@ -3,7 +3,7 @@ import React from 'react'
 const Steps = () => {
     return (
 
-        <div className='p-2 py-10 bg-white rounded shadow-sm flex justify-center ' >
+        <div className='p-2 py-10 bg-white rounded shadow-sm lg:flex justify-center hidden' >
             <ol class="relative text-gray-500 border-s border-gray-200 dark:border-gray-700 dark:text-gray-400 " >
                 <li class="mb-10 ms-6">
                     <span class="absolute flex items-center justify-center w-8 h-8 bg-green-200 rounded-full -start-4 ring-4 ring-white dark:ring-gray-900 dark:bg-green-900">
